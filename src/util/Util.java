@@ -1,5 +1,6 @@
 package util;
 
+import java.math.BigInteger;
 import java.util.BitSet;
 
 public class Util {
@@ -21,22 +22,66 @@ public class Util {
     public static BitSet leftShift(BitSet word, int lenBS, int shifts) {
         BitSet p = new BitSet(lenBS);
         for (int i = 0; i < lenBS; i++)
-            p.set(i, word.get((i - shifts + lenBS) % lenBS));
+            //p.set(i, word.get((i - shifts + lenBS) % lenBS));
+            p.set(i, word.get((i + shifts) % lenBS));
         return p;
+    }
+
+    public static String stringToHex(String word) {
+        return String.format("%x", new BigInteger(1, word.getBytes()));
     }
 
     public static BitSet[] splitStringInBlocks(String word, int lengthBlock) throws Exception {
         if (lengthBlock <= 0)
             throw new Exception("The block's length must be greater than 0");
-        int blocks = (int) Math.ceil((8.0 * word.length()) / lengthBlock);
+        word = stringToHex(word);
+        int blocks = (int) Math.ceil((4.0 * word.length()) / lengthBlock);
         BitSet[] b = new BitSet[blocks];
         int index = 0;
         for (int i = 0; i < blocks; i++) {
             b[i] = new BitSet(lengthBlock);
             for (int j = 0; j < lengthBlock && index < word.length(); j++) {
-                int l = word.charAt(index++);
-                for (int k = 0; k < 8; k++, l /= 2)
-                    b[i].set(j * 8 + k, l % 2 == 1);
+                int l = Integer.parseInt(word.charAt(index++) + "", 16);
+                for (int k = 0; k < 4; k++, l /= 2)
+                    b[i].set(j * 4 + (3 - k), l % 2 == 1);
+            }
+        }
+        return b;
+    }
+
+    public static BitSet[] splitStringInBlocksMessage(String word, int lengthBlock) throws Exception {
+        if (lengthBlock <= 0)
+            throw new Exception("The block's length must be greater than 0");
+        word = stringToHex(word);
+        word = "0123456789ABCDEF";
+        int blocks = (int) Math.ceil((4.0 * word.length()) / lengthBlock);
+        BitSet[] b = new BitSet[blocks];
+        int index = 0;
+        for (int i = 0; i < blocks; i++) {
+            b[i] = new BitSet(lengthBlock);
+            for (int j = 0; j < lengthBlock && index < word.length(); j++) {
+                int l = Integer.parseInt(word.charAt(index++) + "", 16);
+                for (int k = 0; k < 4; k++, l /= 2)
+                    b[i].set(j * 4 + (3 - k), l % 2 == 1);
+            }
+        }
+        return b;
+    }
+
+    public static BitSet[] splitStringInBlocksKey(String word, int lengthBlock) throws Exception {
+        if (lengthBlock <= 0)
+            throw new Exception("The block's length must be greater than 0");
+        word = stringToHex(word);
+        word = "133457799BBCDFF1";
+        int blocks = (int) Math.ceil((4.0 * word.length()) / lengthBlock);
+        BitSet[] b = new BitSet[blocks];
+        int index = 0;
+        for (int i = 0; i < blocks; i++) {
+            b[i] = new BitSet(lengthBlock);
+            for (int j = 0; j < lengthBlock && index < word.length(); j++) {
+                int l = Integer.parseInt(word.charAt(index++) + "", 16);
+                for (int k = 0; k < 4; k++, l /= 2)
+                    b[i].set(j * 4 + (3 - k), l % 2 == 1);
             }
         }
         return b;
@@ -55,18 +100,19 @@ public class Util {
         for (int i = 0; i < blocks; i++) {
             b[i] = new BitSet(lengthBlock);
             for (int j = 0; j < lengthBlock; j++)
-                b[i].set(i * lengthBlock + j, word.get(index++));
+                b[i].set((lengthBlock - j - 1), word.get(index++));
         }
         return b;
     }
 
     /**
      * Creates bitset AB
+     *
      * @param a
      * @param lengthA
      * @param b
      * @param lengthB
-     * @return 
+     * @return
      */
     public static BitSet createBitSet(BitSet a, int lengthA, BitSet b, int lengthB) {
         BitSet c = new BitSet(lengthA + lengthB);
@@ -98,14 +144,13 @@ public class Util {
         return (char) number;
     }
 
-    public static String toStringBitSet(BitSet bs, int lenBS) {
+    public static String toStringBitSet(BitSet bs, int lenBS, int splitter) {
         StringBuilder out = new StringBuilder();
-        for (int i = 0, cnt = 0; i < lenBS; i++, cnt = (cnt + 1) % 8) {
+        for (int i = 0, cnt = 0; i < lenBS; i++, cnt = (cnt + 1) % splitter) {
             if (cnt == 0)
                 out.append(' ');
             out.append(bs.get(i) ? '1' : '0');
         }
-        out = new StringBuilder(out.reverse());
         return out.toString();
     }
 

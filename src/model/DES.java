@@ -63,7 +63,7 @@ public class DES {
     public static final int C_LENGTH = 28;
     public static final int D_LENGTH = 28;
     public static final int MESSAGE_BLOCK_LENGTH = 64;
-    public static final int KEY_BLOCK_LENGTH = 56;
+    public static final int KEY_BLOCK_LENGTH = 48;
     public static final int B_NUMBER = 8, B_LENGTH = 6, S_NUMBER = 8, S_LENGTH = 4;
     public static final int L_LENGTH = 32;
     public static final int R_LENGTH = 32;
@@ -71,8 +71,11 @@ public class DES {
     public static BitSet innerFunction(BitSet r, Key key) throws Exception {
         BitSet p = new BitSet();
 
+        //System.out.println(Util.toStringBitSet(r, 32, 4));
         r = Util.expantion(r, E);
+        //System.out.println(Util.toStringBitSet(r, 48, 6));
         r.xor(key.getWord());
+        //System.out.println(Util.toStringBitSet(r, 48, 6));
 
         BitSet[] B = Util.splitBitSetInBlocks(r, B_NUMBER * B_LENGTH, B_NUMBER, B_LENGTH);
         BitSet C = new BitSet(S_NUMBER * S_LENGTH), c;
@@ -84,7 +87,7 @@ public class DES {
         }
 
         C = Util.permutation(C, P);
-
+        //System.out.println(Util.toStringBitSet(C, 32, 4));
         return C;
     }
 
@@ -92,13 +95,13 @@ public class DES {
         BitSet box = new BitSet(S_LENGTH);
         int number = Util.getNumberFromBitSet(word, B_LENGTH);
 
-        int r = (1 << ((0b100000 & number) & 1)) + ((0b000001 & number) & 1);
+        int r = (((0b100000 & number) >> 4) & 0b11) + ((0b000001 & number) & 1);
         int c = (0b011110 & number) >> 1;
 
         int s = S[id][r][c];
 
         for (int i = 0; i < S_LENGTH; i++, s /= 2)
-            box.set(i, (s & 1) == 1);
+            box.set((S_LENGTH - i - 1), (s & 1) == 1);
 
         return box;
     }
@@ -109,7 +112,7 @@ public class DES {
     }
 
     public static BitSet getR(BitSet word) {
-        int from = DES.L_LENGTH, to = DES.R_LENGTH;
+        int from = DES.L_LENGTH, to = DES.L_LENGTH + DES.R_LENGTH;
         return word.get(from, to);
     }
 

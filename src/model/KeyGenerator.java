@@ -1,5 +1,6 @@
 package model;
 
+import java.math.BigInteger;
 import java.util.BitSet;
 import java.util.Random;
 import util.Util;
@@ -24,7 +25,7 @@ public class KeyGenerator {
         for(int i = initialLength; i < 8; i++)
             keyStr += (char)('a' + rnd.nextInt(26));
         
-        this.key = keyStr;
+        key = keyStr;
 
         keys = new Key[17];
         
@@ -33,33 +34,37 @@ public class KeyGenerator {
         
         System.out.println("Keys generator ---START ---");
         
+        BitSet ci, di;
+        
         // Add k0
         keys[0] = currentKey;
-        System.out.println(Util.toStringBitSet(currentKey.getWord(), DES.D_LENGTH * 2));
+        ci = currentKey.getC();
+        di = currentKey.getD();
+        
         
         // Add k1 ... k16
         for(int i = 1; i <= 16; i++){
             // C_i = LS_i(C_i-1)
-            BitSet ci = currentKey.getC();
-            //System.out.println(Util.toStringBitSet(ci, DES.C_LENGTH));
             ci = applyLS(ci, i);
-            System.out.println(Util.toStringBitSet(ci, DES.C_LENGTH));
             
             // D_i = LS_i(D_i-1)
-            BitSet di = currentKey.getD();
-            //System.out.println(Util.toStringBitSet(di, DES.D_LENGTH));
             di = applyLS(di, i);
-            System.out.println(Util.toStringBitSet(di, DES.D_LENGTH));
+            
+            System.out.print("C" + String.format("%2d", i) + ": " +Util.toStringBitSet(ci, DES.C_LENGTH, 64));
+            System.out.println("\tD" + String.format("%2d", i) + ": " +Util.toStringBitSet(di, DES.D_LENGTH, 64));
             
             // K_i = PC-2(C_i D_i)
             currentKey = new Key(ci, di);
-            //System.out.println(Util.toStringBitSet(currentKey.getWord(), DES.D_LENGTH * 2));
             currentKey.setWord(Util.permutation(currentKey.getWord(), DES.PC2));
-            System.out.println(Util.toStringBitSet(currentKey.getWord(), DES.D_LENGTH * 2));
             keys[i] = currentKey;
         }
         
-        System.out.println("Keys generator ---END ---");
+        System.out.println("");
+        for(int i = 1; i <= 16; i++)
+            System.out.println("k" + String.format("%2d", i) + " = " + Util.toStringBitSet(keys[i].getWord(), DES.KEY_BLOCK_LENGTH, 6));
+        
+        
+        System.out.println("Keys generator ---END ---\n");
         
     }
  
@@ -70,9 +75,9 @@ public class KeyGenerator {
      */
     private Key getFirstKey(String keyStr) throws Exception{
         Key theKey = new Key(keyStr);
-        System.out.println(Util.toStringBitSet(theKey.getWord(), DES.D_LENGTH * 2));
+        System.out.println(Util.toStringBitSet(theKey.getWord(), DES.D_LENGTH * 2, 6));
         theKey.setWord(Util.permutation(theKey.getWord(), DES.PC1));
-        System.out.println(Util.toStringBitSet(theKey.getWord(), DES.D_LENGTH * 2));
+        System.out.println(Util.toStringBitSet(theKey.getWord(), DES.D_LENGTH * 2, 6));
         
         return theKey;
     }

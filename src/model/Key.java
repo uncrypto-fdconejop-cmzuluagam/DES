@@ -19,11 +19,11 @@ public class Key {
         if (keyStr.length() != 8)
             throw new Exception("Key must have 8 characters.");
         word = new BitSet(DES.KEY_BLOCK_LENGTH);
-        word = Util.splitStringInBlocks(keyStr, DES.KEY_BLOCK_LENGTH)[0];
+        word = Util.splitStringInBlocksKey(keyStr, 64)[0];
 
     }
 
-    public Key(BitSet d, BitSet c) {
+    public Key(BitSet c, BitSet d) {
         word = new BitSet(DES.C_LENGTH + DES.D_LENGTH);
 
         // Set c part

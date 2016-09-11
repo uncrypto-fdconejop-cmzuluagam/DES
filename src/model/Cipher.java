@@ -22,7 +22,10 @@ public class Cipher {
 
         keyGenerator = new KeyGenerator(key);
 
-        pblocks = Util.splitStringInBlocks(message, DES.MESSAGE_BLOCK_LENGTH);
+        pblocks = Util.splitStringInBlocksMessage(message, DES.MESSAGE_BLOCK_LENGTH);
+        for (int i = 0; i < pblocks.length; i++)
+            System.out.println("m" + String.format("%2d", i) + "  = " + Util.toStringBitSet(pblocks[i], 64, 64));
+
         cblocks = new BitSet[pblocks.length];
 
         states = new BitSet[pblocks.length][17];
@@ -33,31 +36,42 @@ public class Cipher {
             block = pblocks[i];
 
             block = Util.permutation(block, DES.IP);
-
             states[i][0] = block;
+            li = DES.getL(states[i][0]);
+            ri = DES.getR(states[i][0]);
+            System.out.println("m" + String.format("%2d", i) + "' = " + Util.toStringBitSet(block, 64, 64));
+            System.out.print("\tL" + String.format("%2d", 0) + ": " + Util.toStringBitSet(li, DES.L_LENGTH, 64));
+            System.out.println("\tR" + String.format("%2d", 0) + ": " + Util.toStringBitSet(ri, DES.R_LENGTH, 64));
 
             for (int j = 1; j <= 15; j++) {
-                li = DES.getL(states[i][j - 1]);
-                ri = DES.getR(states[i][j - 1]);
 
-                li1 = ri;
+                li1 = (BitSet) ri.clone();
                 ri1 = DES.innerFunction(ri, keyGenerator.getKeys()[j]);
                 ri1.xor(li);
 
+                System.out.print("\tL" + String.format("%2d", j) + ": " + Util.toStringBitSet(li1, DES.L_LENGTH, 64));
+                System.out.println("\tR" + String.format("%2d", j) + ": " + Util.toStringBitSet(ri1, DES.R_LENGTH, 64));
+
                 states[i][j] = Util.createBitSet(li1, DES.L_LENGTH, ri1, DES.R_LENGTH);
+
+                li = li1;
+                ri = ri1;
             }
 
-            li = DES.getL(states[i][15]);
-            ri = DES.getR(states[i][15]);
-
-            li1 = ri;
-            ri1 = DES.innerFunction(li, keyGenerator.getKeys()[16]);
+            li1 = (BitSet) ri.clone();
+            ri1 = DES.innerFunction(ri, keyGenerator.getKeys()[16]);
             ri1.xor(li);
 
-            states[i][16] = Util.createBitSet(li1, DES.L_LENGTH, ri1, DES.R_LENGTH);
+            System.out.print("\tL" + String.format("%2d", 16) + "= " + Util.toStringBitSet(li1, DES.L_LENGTH, 64));
+            System.out.println("\tR" + String.format("%2d", 16) + "= " + Util.toStringBitSet(ri1, DES.R_LENGTH, 64));
+
+            // states[i][16] = Util.createBitSet(li1, DES.R_LENGTH, ri1, DES.L_LENGTH); Is it a mistake in the slides?
+            states[i][16] = Util.createBitSet(li1, DES.R_LENGTH, ri1, DES.L_LENGTH);
 
             cblocks[i] = states[i][16];
+
             cblocks[i] = Util.permutation(cblocks[i], DES.INV_IP);
+            System.out.println("c" + String.format("%2d", i) + " = " + Util.toStringBitSet(cblocks[i], 64, 8));
         }
 
         cipher = "";
