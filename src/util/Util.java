@@ -22,7 +22,6 @@ public class Util {
     public static BitSet leftShift(BitSet word, int lenBS, int shifts) {
         BitSet p = new BitSet(lenBS);
         for (int i = 0; i < lenBS; i++)
-            //p.set(i, word.get((i - shifts + lenBS) % lenBS));
             p.set(i, word.get((i + shifts) % lenBS));
         return p;
     }

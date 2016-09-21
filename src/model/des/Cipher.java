@@ -1,4 +1,4 @@
-package model;
+package model.des;
 
 import java.io.FileInputStream;
 import java.util.BitSet;

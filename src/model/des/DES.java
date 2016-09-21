@@ -1,4 +1,4 @@
-package model;
+package model.des;
 
 import java.util.BitSet;
 import util.Util;
