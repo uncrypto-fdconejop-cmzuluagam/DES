@@ -71,16 +71,15 @@ public class Cipher {
             cblocks[i] = states[i][16];
 
             cblocks[i] = Util.permutation(cblocks[i], DES.INV_IP);
-            System.out.println("c" + String.format("%2d", i) + " = " + Util.toStringBitSet(cblocks[i], 64, 8));
+            System.out.println("c " + String.format("%2d", i) + " = " + Util.toStringBitSet(cblocks[i], 64, 8));
         }
 
         cipher = "";
         for (BitSet cblock : cblocks) {
             block = cblock;
             for (int i = 0; i < 64; i += 8)
-                cipher += Util.getCharacterFromBitSet(block, 64, i, i + 8);
+                cipher += Util.getCharacterFromBitSetOrder(block, 64, i, i + 8);
         }
-
     }
 
     public String getMessage() {
