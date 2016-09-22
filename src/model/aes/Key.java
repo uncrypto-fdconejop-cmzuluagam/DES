@@ -30,13 +30,8 @@ public class Key {
         //System.out.println(this);
     }
     
-    public Key(short[]... key) throws Exception{
-        if(key.length != 4)
-            throw new Exception("Key must have 4 rows.");
-        for (short[] row : key) 
-            if(row.length != 4)
-                throw new Exception("Key must have 4 columns.");
-        
+    
+    public Key(short[][] key) {
         word = new short[4][4];
         for(int i = 0; i < 4; i++)
             for(int j = 0; j < 4; j++)

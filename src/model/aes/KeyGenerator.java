@@ -1,7 +1,7 @@
 package model.aes;
 
 import java.util.Random;
-import util.Util;
+import util.UtilAES;
 
 public class KeyGenerator {
     
@@ -24,7 +24,7 @@ public class KeyGenerator {
 
         int rounds = AES._128_ROUNDS;
         
-        keys = new Key[rounds];
+        keys = new Key[rounds + 1];
         
         
         // Set first 4 rows
@@ -32,6 +32,8 @@ public class KeyGenerator {
         //Key initialKey = new Key(keyStr);
         Key initialKey = new Key(true); // Only for slides example
         short[][] initialKeyWord = initialKey.getWord();
+        
+        keys[0] = new Key(initialKeyWord);
         
         short[][] w = new short[(rounds + 1) * 4][4];
         for (int i = 0; i < 4; i++) 
@@ -42,21 +44,19 @@ public class KeyGenerator {
             for(int i = 0; i < 4; i++, row++){
                 if(i == 0){
                     short[] rot = AES.rotWord(w[row - 1]);
-                    short[] subWord = AES.subBytes(rot);
+                    short[] subWord = AES.subBytesRow(rot);
                     short[] xorSubRcon = xorSubRCon(subWord, row);
-                    w[row] = Util.xorArrays(xorSubRcon, w[row - 4]);
+                    w[row] = UtilAES.xorArrays(xorSubRcon, w[row - 4]);
                 }else
-                    w[row] = Util.xorArrays(w[row - 1], w[row - 4]);
+                    w[row] = UtilAES.xorArrays(w[row - 1], w[row - 4]);
             }
-            keys[round - 1] = new Key(w[round * 4], w[round * 4 + 1], w[round * 4 + 2], w[round * 4 + 3]);
-            System.out.println("Round " + round);
-            System.out.println(keys[round - 1]);
+            keys[round] = new Key(new short[][]{w[round * 4], w[round * 4 + 1], w[round * 4 + 2], w[round * 4 + 3]});
+            System.out.println("Round key" + round);
+            System.out.println(keys[round]);
         }
     }
     
-    
-    
-    // Xor between SubWord and RCon
+     // Xor between SubWord and RCon
     public short[] xorSubRCon(short[] subWord, int index) throws Exception{
         int pos = index / 4;
         short[] rcon = new short[subWord.length];
@@ -64,12 +64,15 @@ public class KeyGenerator {
         for(int i = 0; i < subWord.length; i++, r <<= 8){
             rcon[i] = (short) (r & 0x000000ff);
         }
-        return Util.xorArrays(subWord, rcon);
+        return UtilAES.xorArrays(subWord, rcon);
     }
-    
-    public static void main(String[] args) throws Exception{
-        KeyGenerator generator = new KeyGenerator("abcdefghijklmnop");
-        
+
+    public Key[] getKeys() {
+        return keys;
+    }
+
+    public void setKeys(Key[] keys) {
+        this.keys = keys;
     }
     
 }
