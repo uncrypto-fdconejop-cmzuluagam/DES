@@ -26,28 +26,43 @@ public class Util {
         return p;
     }
 
+    public static String charToHex(char ch){
+        String hex = String.format("%02x", (int) ch);
+        return hex;
+    }
     public static String stringToHex(String word) {
-        return String.format("%x", new BigInteger(1, word.getBytes()));
+        String r = ""; 
+        for(int i = 0; i < word.length(); i ++){
+            r += charToHex(word.charAt(i));
+        }
+        return r;
+        //return String.format("%x", new BigInteger(1, word.getBytes()));
     }
 
     public static BitSet[] splitStringInBlocks(String word, int lengthBlock) throws Exception {
         if (lengthBlock <= 0)
             throw new Exception("The block's length must be greater than 0");
         System.out.println("LLego este  " + word);
+        for(int i = 0; i < word.length();i  ++){
+            System.out.print((int)word.charAt(i) + " ");
+        }
+        System.out.println("acabo numero en ascii");
         word = stringToHex(word);
         
         System.out.println("Cipher en hex " + word);
         
         
         int blocks = (int) Math.ceil((4.0 * word.length()) / lengthBlock);
+        System.out.println("blocks es " + blocks + " lengthBlock = " + lengthBlock);
         BitSet[] b = new BitSet[blocks];
         int index = 0;
         for (int i = 0; i < blocks; i++) {
             b[i] = new BitSet(lengthBlock);
-            for (int j = 0; j < lengthBlock && index < word.length(); j++) {
+            for (int j = 0; j < lengthBlock / 4 && index < word.length(); j++) {
                 int l = Integer.parseInt(word.charAt(index++) + "", 16);
-                for (int k = 0; k < 4; k++, l /= 2)
+                for (int k = 0; k < 4; k++, l /= 2){
                     b[i].set(j * 4 + (3 - k), l % 2 == 1);
+                }
             }
         }
         return b;

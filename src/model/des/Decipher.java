@@ -23,18 +23,22 @@ public class Decipher {
     private BitSet[] pblocks, cblocks; // Plain and ciphered blocks
 
     private BitSet[][] states;
-    public Decipher(String cipher, String key)throws Exception{
+    public Decipher(String cipher, String key, BitSet IV)throws Exception{
         this.cipher = cipher;
         this.key = key;
         System.out.println("recibio " + cipher);
         
         keyGenerator = new KeyGenerator(key);
         
-        cblocks = Util.splitStringInBlocksCipher(cipher, DES.MESSAGE_BLOCK_LENGTH);
+        cblocks = Util.splitStringInBlocks(cipher, DES.MESSAGE_BLOCK_LENGTH);
         
         for (int i = 0; i < cblocks.length; i++)
             System.out.println("c here" + String.format("%2d", i) + "  = " + Util.toStringBitSet(cblocks[i], 64, 64));
 
+        System.out.println("key acabo bien");
+        Counter counter = new Counter(cblocks, IV);
+        cblocks = counter.ctrBlocks;
+        
         pblocks = new BitSet[cblocks.length];
 
         states = new BitSet[cblocks.length][17];
@@ -156,11 +160,16 @@ public class Decipher {
         while (in.hasNext()) {
             String message = in.nextLine();
             String key = in.nextLine();
-
+            //String SIV = in.nextLine();
+            //BitSet[] IV = Util.splitStringInBlocks(SIV, DES.MESSAGE_BLOCK_LENGTH);
             Cipher cipher = new Cipher(message, key);
-            System.out.println("Acabo y dio " + cipher.getCipher());
+            BitSet IV = cipher.getIV();
             
-            Decipher decipher = new Decipher(cipher.getCipher(), key);
+            System.out.println("El mensaje cifrado es " + cipher.getCipher());
+            
+            System.out.println("DECIPHERRRRRR -----------------------------");
+            
+            Decipher decipher = new Decipher(cipher.getCipher(), key, IV);
             
             System.out.println(message + " original vs decifrado " + decipher.getMessage());
         }
