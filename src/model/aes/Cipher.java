@@ -16,27 +16,87 @@ public class Cipher {
         
         KeyGenerator generator = new KeyGenerator(key);
         Key[] keys = generator.getKeys();
+        
+        System.out.println("\n\n-----------START CIPHER-----------\n");
+        
         for (short[][] block : blocks) {
             // Initial round
-            block = AES.addRoundKey(block, keys[0]);
+            block = slidesExample(); // This is only for slides example
             
-            for (int i = 1; i <= 9; i++) {
+            // Transpose key only for the first round
+            Key keyTranspose = new Key(UtilAES.transpose(keys[0].getWord()), true);
+            
+            System.out.println("Input");
+            System.out.println(new Key(block, true));
+            
+            block = AES.addRoundKey(block, keyTranspose);
+            System.out.println("ROUND KEY");
+            System.out.println(new Key(keyTranspose.getWord(), true));
+            for (int i = 1; i <= 9; i++) { 
+                System.out.println("\nRound " + i);
+                
+                System.out.println("\nARK");
+                System.out.println(new Key(block, true));
+                
                 Key roundKey = keys[i];
+                
                 block = AES.subBytes(block);
+                System.out.println("SB");
+                System.out.println(new Key(block, true));
+                
+                block = AES.shiftRow(block);
+                System.out.println("SR");
+                System.out.println(new Key(block, true));
+                
                 block = AES.mixColumns(block);
+                System.out.println("MC");
+                System.out.println(new Key(block, true));
+                
                 block = AES.addRoundKey(block, roundKey);
+                System.out.println("ROUND KEY");
+                System.out.println(keys[i]);
             }
             
+            System.out.println("Round 10");
+
+            System.out.println("\nARK");
+            System.out.println(new Key(block, true));
+            
             block = AES.subBytes(block);
+            System.out.println("SB");
+            System.out.println(new Key(block, true));
+            
             block = AES.shiftRow(block);
+            System.out.println("SR");
+            System.out.println(new Key(block, true));
+            
             block = AES.addRoundKey(block, keys[10]);
-            System.out.println("Round");
-            System.out.println(new Key(block));
+            System.out.println("Output");
+            System.out.println(new Key(block, true));
+
+            System.out.println("c =");
+            for (int i = 0; i < 4; i++) 
+                for (int j = 0; j < 4; j++) {
+                    if(i != 0 || j != 0) System.out.print(" ");
+                    System.out.print(String.format("%02x", block[j][i]));
+                }
         }
+        
+        System.out.println("\n-----------END CIPHER-----------\n\n");
     }
   
     public static void main(String[] args) throws Exception{
-        Cipher cipher = new Cipher("1234", "1234");
+        Cipher cipher = new Cipher("0123456", "1234");
         
+    }
+    
+    
+    static short[][] slidesExample(){
+        return new short[][]{
+                            {65, 101, 117, 97},
+                            {69, 115, 121, 99},
+                            {83, 32,  32,  105},
+                            {32, 109, 102, 108}
+                            };
     }
 }

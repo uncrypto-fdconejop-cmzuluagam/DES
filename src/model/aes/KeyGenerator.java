@@ -40,6 +40,9 @@ public class KeyGenerator {
             for(int j = 0; j < 4; j++)
                 w[i][j] = initialKeyWord[j][i];
         
+        
+        System.out.println("\n\n-----------START KEY GENERATOR-----------\n");
+        
         for(int round = 1, row = 4; round <= rounds; round++){
             for(int i = 0; i < 4; i++, row++){
                 if(i == 0){
@@ -54,6 +57,7 @@ public class KeyGenerator {
             System.out.println("Round key" + round);
             System.out.println(keys[round]);
         }
+        System.out.println("\n-----------END KEY GENERATOR-----------\n\n");
     }
     
      // Xor between SubWord and RCon

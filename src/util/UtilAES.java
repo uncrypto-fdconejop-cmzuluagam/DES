@@ -32,4 +32,13 @@ public class UtilAES {
                     b[i][r][c] = (short) message.charAt(index++);
         return b;
     }
+    
+    public static short[][] transpose(short[][] a){
+        int rows = a.length, cols = a[0].length;
+        short[][] b = new short[rows][cols];
+        for (int i = 0; i < rows; i++) 
+            for (int j = 0; j < cols; j++) 
+                b[j][i] = a[i][j];
+        return b;
+    }
 }

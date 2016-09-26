@@ -30,6 +30,13 @@ public class Key {
         //System.out.println(this);
     }
     
+    // This is only for slides example
+    public Key(short[][] key, boolean slidesExample) {
+        word = new short[4][4];
+        for(int i = 0; i < 4; i++)
+            for(int j = 0; j < 4; j++)
+                word[i][j] = key[i][j];
+    }
     
     public Key(short[][] key) {
         word = new short[4][4];

@@ -96,7 +96,7 @@ public class AES {
         short[][] keym = key.getWord();
         for (int i = 0; i < 4; i++) 
             for (int j = 0; j < 4; j++) 
-                state[i][j] = (byte) (m[i][j] ^ keym[i][j]);
+                state[i][j] = (short) ((m[i][j] ^ keym[i][j]) % 256);
         return state;
     }
     
@@ -115,15 +115,21 @@ public class AES {
         return state;
     }
     
-    public static short[][] mixColumns(short[][] m){
+    public static short[][] mixColumns(short[][] s){
+        // Credits: http://www.movable-type.co.uk/scripts/aes.html
         short[][] state = new short[4][4];
-        for (int j = 0; j < 4; j++) 
+        for (int c = 0; c < 4; c++){ 
+            short[] a = new short[4];
+            short[] b = new short[4];
             for (int i = 0; i < 4; i++){
-                int cell = 0;
-                for (int k = 0; k < 4; k++) 
-                    cell += (GALOIS[i][k] * m[k][j]);
-                state[i][j] = (short) (cell % 255);
+                a[i] = s[i][c];
+                b[i] = (short)((s[i][c] & 0x80) != 0 ? s[i][c]<<1 ^ 0x011b : s[i][c]<<1);
             }
+            state[0][c] = (short)(b[0] ^ a[1] ^ b[1] ^ a[2] ^ a[3]); // {02}•a0 + {03}•a1 + a2 + a3
+            state[1][c] = (short)(a[0] ^ b[1] ^ a[2] ^ b[2] ^ a[3]); // a0 • {02}•a1 + {03}•a2 + a3
+            state[2][c] = (short)(a[0] ^ a[1] ^ b[2] ^ a[3] ^ b[3]); // a0 + a1 + {02}•a2 + {03}•a3
+            state[3][c] = (short)(a[0] ^ b[0] ^ a[1] ^ a[2] ^ b[3]); // {03}•a0 + a1 + a2 + {02}•a3
+        }
         return state;
     }
     
