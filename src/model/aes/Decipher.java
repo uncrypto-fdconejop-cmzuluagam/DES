@@ -111,6 +111,30 @@ public class Decipher {
         System.out.println("mensaje original: " + plainText);
         System.out.println("\n-----------END DECIPHER-----------\n\n");
     }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getPlainText() {
+        return plainText;
+    }
+
+    public void setPlainText(String plainText) {
+        this.plainText = plainText;
+    }
   
     static short[][] slidesExample(){
         return new short[][]{

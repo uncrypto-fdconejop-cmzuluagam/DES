@@ -7,6 +7,7 @@ public class Cipher {
     private String message;
     private String key;
     private String cipherMessage;
+    private KeyGenerator keyGenerator;
     private short[][][] blocks;
 
     public Cipher(String message, String key) throws Exception {
@@ -15,8 +16,8 @@ public class Cipher {
         cipherMessage = "";
         blocks = UtilAES.stringToShortBlocks(message);
         System.out.println("numero de bloques " + blocks.length);
-        KeyGenerator generator = new KeyGenerator(key);
-        Key[] keys = generator.getKeys();
+        keyGenerator = new KeyGenerator(key);
+        Key[] keys = keyGenerator.getKeys();
         
         System.out.println("\n\n-----------START CIPHER-----------\n");
         
@@ -102,7 +103,40 @@ public class Cipher {
         Decipher dec = new Decipher(cipher.cipherMessage, "1234567890abcdef");
         
     }
+
+    public KeyGenerator getKeyGenerator() {
+        return keyGenerator;
+    }
+
+    public void setKeyGenerator(KeyGenerator keyGenerator) {
+        this.keyGenerator = keyGenerator;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getCipherMessage() {
+        return cipherMessage;
+    }
+
+    public void setCipherMessage(String cipherMessage) {
+        this.cipherMessage = cipherMessage;
+    }
     
+   
     
     static short[][] slidesExample(){
         return new short[][]{

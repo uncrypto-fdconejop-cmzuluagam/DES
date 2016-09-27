@@ -78,5 +78,15 @@ public class KeyGenerator {
     public void setKeys(Key[] keys) {
         this.keys = keys;
     }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+    
+    
     
 }
