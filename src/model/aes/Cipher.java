@@ -99,8 +99,8 @@ public class Cipher {
     }
   
     public static void main(String[] args) throws Exception{
-        Cipher cipher = new Cipher("Esto funciono re bien", "1234567890abcdef");
-        Decipher dec = new Decipher(cipher.cipherMessage, "1234567890abcdef");
+        gui.aes.Main main = new gui.aes.Main();
+        main.setVisible(true);
         
     }
 

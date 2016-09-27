@@ -144,7 +144,8 @@ public class Decipher {
             {(short)0x00000074,(short)0x0000000c,(short)0x000000af,(short)0x0000007f}};
     }
     public static void main(String[] args) throws Exception{
-        Decipher decipher = new Decipher("rÑ¥dM+<7]>e­ Ø", "aaaaaaaaaaaaaaaa");
+        gui.aes.Main main = new gui.aes.Main();
+        main.setVisible(true);
     }
     
 }

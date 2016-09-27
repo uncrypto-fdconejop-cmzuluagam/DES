@@ -153,30 +153,7 @@ public class Decipher {
     }
 
     public static void main(String[] args) throws Exception {
-
-        System.setIn(new FileInputStream("inDec.txt"));
-
-        Scanner in = new Scanner(System.in);
-        while (in.hasNext()) {
-            String message = in.nextLine();
-            String key = in.nextLine();
-            String SIV = in.nextLine();
-            BitSet[] IV = Util.splitStringInBlocks(SIV, DES.MESSAGE_BLOCK_LENGTH);
-            //Cipher cipher = new Cipher(message, key);
-            //BitSet IV = cipher.getIV();
-            String nonce = "";
-            for (int i = 0; i < 64; i += 8)
-                nonce += Util.getCharacterFromBitSetOrder(IV[0], 64, i, i + 8);
-            
-            
-            System.out.println("DECIPHERRRRRR -----------------------------");
-            
-            Decipher decipher = new Decipher(message, key, IV[0]);
-            
-            //System.out.println("El mensaje cifrado es " + cipher.getCipher());
-            System.out.println("nonce is " + nonce);
-            
-            System.out.println(message + " original vs decifrado " + decipher.getMessage());
-        }
+        gui.des.Main main = new gui.des.Main();
+        main.setVisible(true);
     }
 }

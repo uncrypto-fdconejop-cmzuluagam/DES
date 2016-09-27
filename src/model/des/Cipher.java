@@ -146,23 +146,8 @@ public class Cipher {
     }
 
     public static void main(String[] args) throws Exception {
-
-        System.setIn(new FileInputStream("in.txt"));
-
-        Scanner in = new Scanner(System.in);
-        while (in.hasNext()) {
-            String message = in.nextLine();
-            String key = in.nextLine();
-
-            Cipher cipher = new Cipher(message, key);
-            String nonce = "";
-            for (int i = 0; i < 64; i += 8)
-                nonce += Util.getCharacterFromBitSetOrder(cipher.getIV(), 64, i, i + 8);
-            
-            System.out.println("El mensaje cifrado es " + cipher.getCipher());
-            
-            System.out.println("El IV(nonce) es " + nonce);
-        }
+        gui.des.Main main = new gui.des.Main();
+        main.setVisible(true);
     }
 
 }
