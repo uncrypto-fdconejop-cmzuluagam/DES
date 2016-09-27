@@ -11,7 +11,7 @@ public class KeyGenerator {
     
     public KeyGenerator(String keyStr) throws Exception{
         if(keyStr.length() > 16)
-            throw new Exception("Key must have at maximum 8 characters");
+            throw new Exception("Key must have at maximum 16 characters");
         
         initialLength = keyStr.length();
         
@@ -29,8 +29,8 @@ public class KeyGenerator {
         
         // Set first 4 rows
         
-        //Key initialKey = new Key(keyStr);
-        Key initialKey = new Key(true); // Only for slides example
+        Key initialKey = new Key(keyStr);
+        //Key initialKey = new Key(true); // Only for slides example
         short[][] initialKeyWord = initialKey.getWord();
         
         keys[0] = new Key(initialKeyWord);

@@ -6,14 +6,15 @@ public class Cipher {
     
     private String message;
     private String key;
+    private String cipherMessage;
     private short[][][] blocks;
 
     public Cipher(String message, String key) throws Exception {
         this.message = message;
         this.key = key;
-        
+        cipherMessage = "";
         blocks = UtilAES.stringToShortBlocks(message);
-        
+        System.out.println("numero de bloques " + blocks.length);
         KeyGenerator generator = new KeyGenerator(key);
         Key[] keys = generator.getKeys();
         
@@ -21,7 +22,7 @@ public class Cipher {
         
         for (short[][] block : blocks) {
             // Initial round
-            block = slidesExample(); // This is only for slides example
+            // block = slidesExample(); // This is only for slides example
             
             // Transpose key only for the first round
             Key keyTranspose = new Key(UtilAES.transpose(keys[0].getWord()), true);
@@ -79,14 +80,26 @@ public class Cipher {
                 for (int j = 0; j < 4; j++) {
                     if(i != 0 || j != 0) System.out.print(" ");
                     System.out.print(String.format("%02x", block[j][i]));
+                    
                 }
+            System.out.println("\nc String es =");
+            for (int i = 0; i < 4; i++) 
+                for (int j = 0; j < 4; j++) {
+                    if(i != 0 || j != 0) System.out.print(" ");
+                    char cur = (char)block[j][i];
+                    cipherMessage += cur;
+                    System.out.print(cur);
+                }
+            
         }
-        
+        System.out.println("");
+        System.out.println("Mensaje cifrado: " + cipherMessage);
         System.out.println("\n-----------END CIPHER-----------\n\n");
     }
   
     public static void main(String[] args) throws Exception{
-        Cipher cipher = new Cipher("0123456", "1234");
+        Cipher cipher = new Cipher("Esto funciono re bien", "1234567890abcdef");
+        Decipher dec = new Decipher(cipher.cipherMessage, "1234567890abcdef");
         
     }
     

@@ -68,6 +68,14 @@ public class AES {
         {0x09, 0x0e, 0x0b, 0x0d},
         {0x0d, 0x09, 0x0e, 0x0b},
         {0x0b, 0x0d, 0x09, 0x0e}};
+    
+    public static final short[][] invMixColMatrix = {
+        {12,12,13,4},
+        {3,8,4,5},
+        {7,6,2,14},
+        {13,9,9,13}
+    };
+
         
         
     // RotWord function (Left Shift)
@@ -91,6 +99,16 @@ public class AES {
         return sub;
     }
     
+    public static short[] InvSubBytesRow(short[] r){
+        short[] sub = new short[r.length];
+        for (int i = 0; i < sub.length; i++) {
+            short b = r[i];
+            int row = (b / 16), col = (b % 16);
+            sub[i] = (short) AES.INV_SBOX[row * 16 + col];
+        }
+        return sub;
+    }
+    
     public static short[][] addRoundKey(short[][] m, Key key){
         short[][] state = new short[4][4];
         short[][] keym = key.getWord();
@@ -107,11 +125,26 @@ public class AES {
         return state;
     }
     
+    public static short[][] InvSubBytes(short[][] m){
+        short[][] state = new short[4][];
+        for (int i = 0; i < 4; i++) 
+            state[i] = InvSubBytesRow(m[i]);
+        return state;
+    }
+    
     public static short[][] shiftRow(short[][] m){
         short[][] state = new short[4][4];
         for (int i = 0; i < 4; i++) 
             for (int j = 0; j < 4; j++) 
                 state[i][j] = m[i][(j + i) % 4];
+        return state;
+    }
+    
+    public static short[][] InvShiftRow(short[][] m){
+        short[][] state = new short[4][4];
+        for (int i = 0; i < 4; i++) 
+            for (int j = 0; j < 4; j++) 
+                state[i][j] = m[i][((j - i) + 4) % 4];
         return state;
     }
     
@@ -131,6 +164,34 @@ public class AES {
             state[3][c] = (short)(a[0] ^ b[0] ^ a[1] ^ a[2] ^ b[3]); // {03}•a0 + a1 + a2 + {02}•a3
         }
         return state;
+    }
+
+     public static short FFMul(short a, short b) {
+        short aa = a, bb = b, r = 0, t;
+        while (aa != 0) {
+        if ((aa & 1) != 0)
+        r = (short) (r ^ bb);
+        t = (short) (bb & 0x80);
+        bb = (short) (bb << 1);
+        if (t != 0)
+            bb = (short) (bb ^ 0x1b);
+        aa = (short) ((aa & 0xff) >> 1);
+        }
+        return (short)(r % 256);
+ }
+    
+    public static short[][] InvMixColumns(short[][] s){
+        short[] sp = new short[4];
+        short b02 = (short)0x0e, b03 = (short)0x0b, b04 = (short)0x0d, b05 = (short)0x09;
+        for (int c = 0; c < 4; c++) {
+            sp[0] = (short)(FFMul(b02, s[0][c]) ^ FFMul(b03, s[1][c]) ^ FFMul(b04,s[2][c]) ^ FFMul(b05,s[3][c]));
+            sp[1] = (short)(FFMul(b05, s[0][c]) ^ FFMul(b02, s[1][c]) ^ FFMul(b03,s[2][c]) ^ FFMul(b04,s[3][c]));
+            sp[2] = (short)(FFMul(b04, s[0][c]) ^ FFMul(b05, s[1][c]) ^ FFMul(b02,s[2][c]) ^ FFMul(b03,s[3][c]));
+            sp[3] = (short)(FFMul(b03, s[0][c]) ^ FFMul(b04, s[1][c]) ^ FFMul(b05,s[2][c]) ^ FFMul(b02,s[3][c]));
+            for (int i = 0; i < 4; i++) s[i][c] = (short)(sp[i]);
+        }
+
+        return s;
     }
     
     

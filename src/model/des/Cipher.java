@@ -10,19 +10,23 @@ public class Cipher {
     private String message;
     private String cipher;
     private String key;
+    private BitSet IV;
 
     private KeyGenerator keyGenerator;
     private BitSet[] pblocks, cblocks; // Plain and ciphered blocks
 
     private BitSet[][] states;
 
+    public BitSet getIV(){
+        return this.IV;
+    }
     public Cipher(String message, String key) throws Exception {
         this.message = message;
         this.key = key;
 
         keyGenerator = new KeyGenerator(key);
 
-        pblocks = Util.splitStringInBlocksMessage(message, DES.MESSAGE_BLOCK_LENGTH);
+        pblocks = Util.splitStringInBlocks(message, DES.MESSAGE_BLOCK_LENGTH);
         for (int i = 0; i < pblocks.length; i++)
             System.out.println("m" + String.format("%2d", i) + "  = " + Util.toStringBitSet(pblocks[i], 64, 64));
 
@@ -71,16 +75,18 @@ public class Cipher {
             cblocks[i] = states[i][16];
 
             cblocks[i] = Util.permutation(cblocks[i], DES.INV_IP);
-            System.out.println("c" + String.format("%2d", i) + " = " + Util.toStringBitSet(cblocks[i], 64, 8));
+            System.out.println("c " + String.format("%2d", i) + " = " + Util.toStringBitSet(cblocks[i], 64, 8));
         }
-
+        Counter counter = new Counter(cblocks);
+        cblocks = counter.ctrBlocks;
+        this.IV = counter.IV;
+        
         cipher = "";
         for (BitSet cblock : cblocks) {
             block = cblock;
             for (int i = 0; i < 64; i += 8)
-                cipher += Util.getCharacterFromBitSet(block, 64, i, i + 8);
+                cipher += Util.getCharacterFromBitSetOrder(block, 64, i, i + 8);
         }
-
     }
 
     public String getMessage() {
@@ -149,8 +155,13 @@ public class Cipher {
             String key = in.nextLine();
 
             Cipher cipher = new Cipher(message, key);
-
-            System.out.println(cipher.getCipher());
+            String nonce = "";
+            for (int i = 0; i < 64; i += 8)
+                nonce += Util.getCharacterFromBitSetOrder(cipher.getIV(), 64, i, i + 8);
+            
+            System.out.println("El mensaje cifrado es " + cipher.getCipher());
+            
+            System.out.println("El IV(nonce) es " + nonce);
         }
     }
 
