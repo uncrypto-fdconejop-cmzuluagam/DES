@@ -1,7 +1,7 @@
 package model.des;
 
 import java.util.BitSet;
-import util.Util;
+import util.UtilDES;
 
 public class DES {
 
@@ -72,13 +72,13 @@ public class DES {
     public static BitSet innerFunction(BitSet r, Key key) throws Exception {
         BitSet p = new BitSet();
 
-        //System.out.println(Util.toStringBitSet(r, 32, 4));
-        r = Util.expantion(r, E);
-        //System.out.println(Util.toStringBitSet(r, 48, 6));
+        //System.out.println(UtilDES.toStringBitSet(r, 32, 4));
+        r = UtilDES.expantion(r, E);
+        //System.out.println(UtilDES.toStringBitSet(r, 48, 6));
         r.xor(key.getWord());
-        //System.out.println(Util.toStringBitSet(r, 48, 6));
+        //System.out.println(UtilDES.toStringBitSet(r, 48, 6));
 
-        BitSet[] B = Util.splitBitSetInBlocks(r, B_NUMBER * B_LENGTH, B_NUMBER, B_LENGTH);
+        BitSet[] B = UtilDES.splitBitSetInBlocks(r, B_NUMBER * B_LENGTH, B_NUMBER, B_LENGTH);
         BitSet C = new BitSet(S_NUMBER * S_LENGTH), c;
 
         for (int i = 0; i < B_NUMBER; i++) {
@@ -87,14 +87,14 @@ public class DES {
                 C.set(i * S_LENGTH + j, c.get(j));
         }
 
-        C = Util.permutation(C, P);
-        //System.out.println(Util.toStringBitSet(C, 32, 4));
+        C = UtilDES.permutation(C, P);
+        //System.out.println(UtilDES.toStringBitSet(C, 32, 4));
         return C;
     }
 
     private static BitSet sBox(BitSet word, int id) {
         BitSet box = new BitSet(S_LENGTH);
-        int number = Util.getNumberFromBitSet(word, B_LENGTH);
+        int number = UtilDES.getNumberFromBitSet(word, B_LENGTH);
 
         int r = (((0b100000 & number) >> 4) & 0b11) + ((0b000001 & number) & 1);
         int c = (0b011110 & number) >> 1;

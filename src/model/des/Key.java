@@ -1,7 +1,7 @@
 package model.des;
 
 import java.util.BitSet;
-import util.Util;
+import util.UtilDES;
 
 public class Key {
 
@@ -19,8 +19,8 @@ public class Key {
         if (keyStr.length() != 8)
             throw new Exception("Key must have 8 characters.");
         word = new BitSet(DES.KEY_BLOCK_LENGTH);
-        //word = Util.splitStringInBlocksKey(keyStr, 64)[0];
-        word = Util.splitStringInBlocks(keyStr, 64)[0];
+        //word = UtilDES.splitStringInBlocksKey(keyStr, 64)[0];
+        word = UtilDES.splitStringInBlocks(keyStr, 64)[0];
 
     }
 

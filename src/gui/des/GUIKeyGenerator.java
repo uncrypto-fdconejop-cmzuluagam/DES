@@ -9,7 +9,7 @@ import java.awt.BorderLayout;
 import javax.swing.JTable;
 import model.des.DES;
 import model.des.Key;
-import util.Util;
+import util.UtilDES;
 
 /**
  *
@@ -28,7 +28,7 @@ public class GUIKeyGenerator extends javax.swing.JFrame {
         for (int i = 0; i < keys.length; i++) {
             Key key = k[i];
             keys[i][0] = Integer.toString(i);
-            keys[i][1] = Util.toStringBitSet(key.getWord(), DES.KEY_BLOCK_LENGTH, 6);
+            keys[i][1] = UtilDES.toStringBitSet(key.getWord(), DES.KEY_BLOCK_LENGTH, 6);
         }
         String[] headers = new String[]{"#", "Key"};
         

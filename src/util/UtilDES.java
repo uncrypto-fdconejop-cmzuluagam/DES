@@ -3,7 +3,7 @@ package util;
 import java.math.BigInteger;
 import java.util.BitSet;
 
-public class Util {
+public class UtilDES {
 
     public static BitSet permutation(BitSet word, int[] permutation) {
         BitSet p = new BitSet(permutation.length);

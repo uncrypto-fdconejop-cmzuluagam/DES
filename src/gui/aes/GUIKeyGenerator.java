@@ -8,7 +8,7 @@ package gui.aes;
 import java.awt.BorderLayout;
 import javax.swing.JTable;
 import model.aes.Key;
-import util.Util;
+import util.UtilDES;
 
 /**
  *

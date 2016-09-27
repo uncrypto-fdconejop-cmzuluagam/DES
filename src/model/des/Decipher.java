@@ -7,7 +7,7 @@ package model.des;
 import java.io.FileInputStream;
 import java.util.BitSet;
 import java.util.Scanner;
-import util.Util;
+import util.UtilDES;
 
 
 /**
@@ -30,10 +30,10 @@ public class Decipher {
         
         keyGenerator = new KeyGenerator(key);
         
-        cblocks = Util.splitStringInBlocks(cipher, DES.MESSAGE_BLOCK_LENGTH);
+        cblocks = UtilDES.splitStringInBlocks(cipher, DES.MESSAGE_BLOCK_LENGTH);
         
         for (int i = 0; i < cblocks.length; i++)
-            System.out.println("c here" + String.format("%2d", i) + "  = " + Util.toStringBitSet(cblocks[i], 64, 64));
+            System.out.println("c here" + String.format("%2d", i) + "  = " + UtilDES.toStringBitSet(cblocks[i], 64, 64));
 
         System.out.println("key acabo bien");
         Counter counter = new Counter(cblocks, IV);
@@ -48,25 +48,25 @@ public class Decipher {
         for (int i = 0; i < cblocks.length; i++) {
             block = cblocks[i];
 
-            block = Util.permutation(block, DES.IP);
+            block = UtilDES.permutation(block, DES.IP);
             
             li = DES.getR(block);
             ri = DES.getL(block);
-            states[i][16] = Util.createBitSet(li, DES.L_LENGTH, ri, DES.R_LENGTH);
-            System.out.println("c" + String.format("%2d", i) + "' = " + Util.toStringBitSet(block, 64, 64));
-            System.out.print("\tR" + String.format("%2d", 16) + ": " + Util.toStringBitSet(ri, DES.R_LENGTH, 64));
-            System.out.println("\tL" + String.format("%2d", 16) + ": " + Util.toStringBitSet(li, DES.L_LENGTH, 64));
+            states[i][16] = UtilDES.createBitSet(li, DES.L_LENGTH, ri, DES.R_LENGTH);
+            System.out.println("c" + String.format("%2d", i) + "' = " + UtilDES.toStringBitSet(block, 64, 64));
+            System.out.print("\tR" + String.format("%2d", 16) + ": " + UtilDES.toStringBitSet(ri, DES.R_LENGTH, 64));
+            System.out.println("\tL" + String.format("%2d", 16) + ": " + UtilDES.toStringBitSet(li, DES.L_LENGTH, 64));
             
             for (int j = 16; j > 1; j--) {
 
                 ri1 = (BitSet) li.clone();
                 li1 = DES.innerFunction(li, keyGenerator.getKeys()[j]);
                 li1.xor(ri);
-                System.out.print("\tR" + String.format("%2d", j) + ": " + Util.toStringBitSet(ri1, DES.R_LENGTH, 64));
-                System.out.println("\tL" + String.format("%2d", j) + ": " + Util.toStringBitSet(li1, DES.L_LENGTH, 64));
+                System.out.print("\tR" + String.format("%2d", j) + ": " + UtilDES.toStringBitSet(ri1, DES.R_LENGTH, 64));
+                System.out.println("\tL" + String.format("%2d", j) + ": " + UtilDES.toStringBitSet(li1, DES.L_LENGTH, 64));
                 
 
-                states[i][j] = Util.createBitSet(ri1, DES.L_LENGTH, li1, DES.R_LENGTH);
+                states[i][j] = UtilDES.createBitSet(ri1, DES.L_LENGTH, li1, DES.R_LENGTH);
 
                 li = li1;
                 ri = ri1;
@@ -75,23 +75,23 @@ public class Decipher {
             li1 = DES.innerFunction(li, keyGenerator.getKeys()[1]);
             li1.xor(ri);
 
-            System.out.print("\tL" + String.format("%2d", 16) + "= " + Util.toStringBitSet(li1, DES.L_LENGTH, 64));
-            System.out.println("\tR" + String.format("%2d", 16) + "= " + Util.toStringBitSet(ri1, DES.R_LENGTH, 64));
+            System.out.print("\tL" + String.format("%2d", 16) + "= " + UtilDES.toStringBitSet(li1, DES.L_LENGTH, 64));
+            System.out.println("\tR" + String.format("%2d", 16) + "= " + UtilDES.toStringBitSet(ri1, DES.R_LENGTH, 64));
             
-            // states[i][16] = Util.createBitSet(li1, DES.R_LENGTH, ri1, DES.L_LENGTH); Is it a mistake in the slides?
-            states[i][0] = Util.createBitSet(ri1, DES.R_LENGTH, li1, DES.L_LENGTH);
+            // states[i][16] = UtilDES.createBitSet(li1, DES.R_LENGTH, ri1, DES.L_LENGTH); Is it a mistake in the slides?
+            states[i][0] = UtilDES.createBitSet(ri1, DES.R_LENGTH, li1, DES.L_LENGTH);
 
             pblocks[i] = states[i][0];
 
-            pblocks[i] = Util.permutation(pblocks[i], DES.INV_IP);
-            System.out.println("p" + String.format("%2d", i) + " = " + Util.toStringBitSet(pblocks[i], 64, 8));
+            pblocks[i] = UtilDES.permutation(pblocks[i], DES.INV_IP);
+            System.out.println("p" + String.format("%2d", i) + " = " + UtilDES.toStringBitSet(pblocks[i], 64, 8));
         }
 
         message = "";
         for (BitSet pblock : pblocks) {
             block = pblock;
             for (int i = 0; i < 64; i += 8)
-                message += Util.getCharacterFromBitSetOrder(block, 64, i, i + 8);
+                message += UtilDES.getCharacterFromBitSetOrder(block, 64, i, i + 8);
         }
         
     }

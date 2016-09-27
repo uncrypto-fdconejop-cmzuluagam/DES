@@ -3,7 +3,7 @@ package model.des;
 import java.math.BigInteger;
 import java.util.BitSet;
 import java.util.Random;
-import util.Util;
+import util.UtilDES;
 
 public class KeyGenerator {
 
@@ -50,18 +50,18 @@ public class KeyGenerator {
             // D_i = LS_i(D_i-1)
             di = applyLS(di, i);
             
-            System.out.print("C" + String.format("%2d", i) + ": " +Util.toStringBitSet(ci, DES.C_LENGTH, 64));
-            System.out.println("\tD" + String.format("%2d", i) + ": " +Util.toStringBitSet(di, DES.D_LENGTH, 64));
+            System.out.print("C" + String.format("%2d", i) + ": " +UtilDES.toStringBitSet(ci, DES.C_LENGTH, 64));
+            System.out.println("\tD" + String.format("%2d", i) + ": " +UtilDES.toStringBitSet(di, DES.D_LENGTH, 64));
             
             // K_i = PC-2(C_i D_i)
             currentKey = new Key(ci, di);
-            currentKey.setWord(Util.permutation(currentKey.getWord(), DES.PC2));
+            currentKey.setWord(UtilDES.permutation(currentKey.getWord(), DES.PC2));
             keys[i] = currentKey;
         }
         
         System.out.println("");
         for(int i = 1; i <= 16; i++)
-            System.out.println("k" + String.format("%2d", i) + " = " + Util.toStringBitSet(keys[i].getWord(), DES.KEY_BLOCK_LENGTH, 6));
+            System.out.println("k" + String.format("%2d", i) + " = " + UtilDES.toStringBitSet(keys[i].getWord(), DES.KEY_BLOCK_LENGTH, 6));
         
         
         System.out.println("Keys generator ---END ---\n");
@@ -75,9 +75,9 @@ public class KeyGenerator {
      */
     private Key getFirstKey(String keyStr) throws Exception{
         Key theKey = new Key(keyStr);
-        System.out.println(Util.toStringBitSet(theKey.getWord(), DES.D_LENGTH * 2, 6));
-        theKey.setWord(Util.permutation(theKey.getWord(), DES.PC1));
-        System.out.println(Util.toStringBitSet(theKey.getWord(), DES.D_LENGTH * 2, 6));
+        System.out.println(UtilDES.toStringBitSet(theKey.getWord(), DES.D_LENGTH * 2, 6));
+        theKey.setWord(UtilDES.permutation(theKey.getWord(), DES.PC1));
+        System.out.println(UtilDES.toStringBitSet(theKey.getWord(), DES.D_LENGTH * 2, 6));
         
         return theKey;
     }
@@ -90,7 +90,7 @@ public class KeyGenerator {
         else
             shifts = 2;
         
-        return Util.leftShift(bitSet, DES.C_LENGTH, shifts);
+        return UtilDES.leftShift(bitSet, DES.C_LENGTH, shifts);
     }
 
     public Key[] getKeys() {

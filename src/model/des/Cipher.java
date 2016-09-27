@@ -3,7 +3,7 @@ package model.des;
 import java.io.FileInputStream;
 import java.util.BitSet;
 import java.util.Scanner;
-import util.Util;
+import util.UtilDES;
 
 public class Cipher {
 
@@ -26,9 +26,9 @@ public class Cipher {
 
         keyGenerator = new KeyGenerator(key);
 
-        pblocks = Util.splitStringInBlocks(message, DES.MESSAGE_BLOCK_LENGTH);
+        pblocks = UtilDES.splitStringInBlocks(message, DES.MESSAGE_BLOCK_LENGTH);
         for (int i = 0; i < pblocks.length; i++)
-            System.out.println("m" + String.format("%2d", i) + "  = " + Util.toStringBitSet(pblocks[i], 64, 64));
+            System.out.println("m" + String.format("%2d", i) + "  = " + UtilDES.toStringBitSet(pblocks[i], 64, 64));
 
         cblocks = new BitSet[pblocks.length];
 
@@ -39,13 +39,13 @@ public class Cipher {
         for (int i = 0; i < pblocks.length; i++) {
             block = pblocks[i];
 
-            block = Util.permutation(block, DES.IP);
+            block = UtilDES.permutation(block, DES.IP);
             states[i][0] = block;
             li = DES.getL(states[i][0]);
             ri = DES.getR(states[i][0]);
-            System.out.println("m" + String.format("%2d", i) + "' = " + Util.toStringBitSet(block, 64, 64));
-            System.out.print("\tL" + String.format("%2d", 0) + ": " + Util.toStringBitSet(li, DES.L_LENGTH, 64));
-            System.out.println("\tR" + String.format("%2d", 0) + ": " + Util.toStringBitSet(ri, DES.R_LENGTH, 64));
+            System.out.println("m" + String.format("%2d", i) + "' = " + UtilDES.toStringBitSet(block, 64, 64));
+            System.out.print("\tL" + String.format("%2d", 0) + ": " + UtilDES.toStringBitSet(li, DES.L_LENGTH, 64));
+            System.out.println("\tR" + String.format("%2d", 0) + ": " + UtilDES.toStringBitSet(ri, DES.R_LENGTH, 64));
 
             for (int j = 1; j <= 15; j++) {
 
@@ -53,10 +53,10 @@ public class Cipher {
                 ri1 = DES.innerFunction(ri, keyGenerator.getKeys()[j]);
                 ri1.xor(li);
 
-                System.out.print("\tL" + String.format("%2d", j) + ": " + Util.toStringBitSet(li1, DES.L_LENGTH, 64));
-                System.out.println("\tR" + String.format("%2d", j) + ": " + Util.toStringBitSet(ri1, DES.R_LENGTH, 64));
+                System.out.print("\tL" + String.format("%2d", j) + ": " + UtilDES.toStringBitSet(li1, DES.L_LENGTH, 64));
+                System.out.println("\tR" + String.format("%2d", j) + ": " + UtilDES.toStringBitSet(ri1, DES.R_LENGTH, 64));
 
-                states[i][j] = Util.createBitSet(li1, DES.L_LENGTH, ri1, DES.R_LENGTH);
+                states[i][j] = UtilDES.createBitSet(li1, DES.L_LENGTH, ri1, DES.R_LENGTH);
 
                 li = li1;
                 ri = ri1;
@@ -66,16 +66,16 @@ public class Cipher {
             ri1 = DES.innerFunction(ri, keyGenerator.getKeys()[16]);
             ri1.xor(li);
 
-            System.out.print("\tL" + String.format("%2d", 16) + "= " + Util.toStringBitSet(li1, DES.L_LENGTH, 64));
-            System.out.println("\tR" + String.format("%2d", 16) + "= " + Util.toStringBitSet(ri1, DES.R_LENGTH, 64));
+            System.out.print("\tL" + String.format("%2d", 16) + "= " + UtilDES.toStringBitSet(li1, DES.L_LENGTH, 64));
+            System.out.println("\tR" + String.format("%2d", 16) + "= " + UtilDES.toStringBitSet(ri1, DES.R_LENGTH, 64));
 
-            // states[i][16] = Util.createBitSet(li1, DES.R_LENGTH, ri1, DES.L_LENGTH); Is it a mistake in the slides?
-            states[i][16] = Util.createBitSet(li1, DES.R_LENGTH, ri1, DES.L_LENGTH);
+            // states[i][16] = UtilDES.createBitSet(li1, DES.R_LENGTH, ri1, DES.L_LENGTH); Is it a mistake in the slides?
+            states[i][16] = UtilDES.createBitSet(li1, DES.R_LENGTH, ri1, DES.L_LENGTH);
 
             cblocks[i] = states[i][16];
 
-            cblocks[i] = Util.permutation(cblocks[i], DES.INV_IP);
-            System.out.println("c " + String.format("%2d", i) + " = " + Util.toStringBitSet(cblocks[i], 64, 8));
+            cblocks[i] = UtilDES.permutation(cblocks[i], DES.INV_IP);
+            System.out.println("c " + String.format("%2d", i) + " = " + UtilDES.toStringBitSet(cblocks[i], 64, 8));
         }
         Counter counter = new Counter(cblocks);
         cblocks = counter.ctrBlocks;
@@ -85,7 +85,7 @@ public class Cipher {
         for (BitSet cblock : cblocks) {
             block = cblock;
             for (int i = 0; i < 64; i += 8)
-                cipher += Util.getCharacterFromBitSetOrder(block, 64, i, i + 8);
+                cipher += UtilDES.getCharacterFromBitSetOrder(block, 64, i, i + 8);
         }
     }
 
